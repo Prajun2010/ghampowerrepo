@@ -12,7 +12,7 @@ class loginandreg extends StatefulWidget
     this.auth,
     this.onSignedIn,
 
-});
+  });
   final AuthImplementation auth;
   final VoidCallback onSignedIn;
   State<StatefulWidget> createState(){
@@ -26,6 +26,8 @@ enum FormType{
 }
 
 class _LoginRegisterState extends State<loginandreg>{
+  TextStyle style = TextStyle(fontFamily: 'Montserrat', fontSize: 20.0);
+
   DialogBox dialogBox=new DialogBox();
   final formKey = new GlobalKey<FormState>();
   FormType _formType =FormType.login;
@@ -43,7 +45,15 @@ class _LoginRegisterState extends State<loginandreg>{
       return false;
     }
   }
+  final background=Container(
+    decoration: BoxDecoration(
+      image: DecorationImage(
+        image: AssetImage('assets/back.png'),
+        fit: BoxFit.cover,
+      ),
+    ),
 
+  );
   void validateAndSubmit() async{
     if(validateAndSave()){
       try{
@@ -64,7 +74,7 @@ class _LoginRegisterState extends State<loginandreg>{
         widget.onSignedIn();
       }
       catch(e){
-        dialogBox.information(context, "Error!!! ", "Could not sign in. :(");
+        dialogBox.information(context, "Error!", "Signin failed");
         print("Error="+e.toString());
       }
     }
@@ -87,25 +97,28 @@ class _LoginRegisterState extends State<loginandreg>{
     });
   }
 
-
-
   //Design
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      appBar: new AppBar(
-        title: new Text("My app login"),
-      ),
-        resizeToAvoidBottomPadding: false,
-        body: new Container(
-        margin: EdgeInsets.all(15.0),
-        child: new Form(
+      resizeToAvoidBottomPadding: true,
 
-          key: formKey,
-          child: new Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: createInputs() + createButtons(),
-          ),
+      body: Padding(
+
+        padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 80.0, bottom:16.0),
+        child: new SingleChildScrollView(
+            reverse: false,
+            child: Padding(
+              padding: const EdgeInsets.only(left: 16.0, right: 16.0, top: 20.0, bottom:16.0),
+              child: new Form(
+
+                key: formKey,
+                child: new Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: createInputs() + createButtons(),
+                ),
+              ),
+            )
         ),
       ),
     );
@@ -119,9 +132,16 @@ class _LoginRegisterState extends State<loginandreg>{
         logo(),
         SizedBox(height: 20.0,),
 
+
         new TextFormField(
-          decoration: new InputDecoration(border: OutlineInputBorder(),labelText: 'Email'),
-          style: new TextStyle(fontSize: 25, color: Colors.amber,),
+          obscureText: false,
+          style: style,
+          decoration: InputDecoration(
+          contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+          hintText: "Email",
+          prefixIcon: Icon(Icons.person),
+           border:
+          OutlineInputBorder(borderRadius: BorderRadius.circular(12.0))),
           validator: (value){
             return value.isEmpty ? 'Email is required.' : null;
           },
@@ -129,11 +149,20 @@ class _LoginRegisterState extends State<loginandreg>{
             return _email = value;
           },
         ),
-        SizedBox(height: 10.0,),
+
+
+
+        SizedBox(height: 20.0,),
         new TextFormField(
-          decoration: new InputDecoration(border: OutlineInputBorder(),labelText: 'Password'),
-          style: new TextStyle(fontSize: 25, color: Colors.amber,),
           obscureText: true,
+          style: style,
+          decoration: InputDecoration(
+          contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+          hintText: "Password",
+
+          prefixIcon: Icon(Icons.lock),
+          border:
+          OutlineInputBorder(borderRadius: BorderRadius.circular(12.0))),
           validator: (value){
             return value.isEmpty ? 'Password is required.' : null;
           },
@@ -142,6 +171,7 @@ class _LoginRegisterState extends State<loginandreg>{
           },
         ),
         SizedBox(height: 20.0,),
+
       ];
   }
 
@@ -162,11 +192,32 @@ class _LoginRegisterState extends State<loginandreg>{
     if(_formType == FormType.login){
       return
         [
-          new RaisedButton(
-            child: new Text("Login",style: new TextStyle(fontSize: 20.0)),
-            textColor: Colors.white,
-            color: Colors.green,
-            onPressed: validateAndSubmit,
+          Padding(
+            padding: const EdgeInsets.all(0),
+            child: new Material(
+
+              elevation: 5.0,
+              borderRadius: BorderRadius.circular(12.0),
+              color: Color.fromRGBO(240, 151, 38, 1),
+
+              child: MaterialButton(
+                minWidth: 250,
+
+                padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                onPressed: validateAndSubmit,
+                child: Text("Login",
+                    textAlign: TextAlign.center,
+                    style: style.copyWith(
+                        color: Colors.white, fontWeight: FontWeight.bold)),
+              ),
+            ),
+          ),
+
+          new FlatButton(
+            child: new Text("Forgot Password?",style: new TextStyle(fontSize: 14.0)),
+            textColor: Colors.redAccent,
+            onPressed: moveToRegister,
+
           ),
 
           new FlatButton(
@@ -180,12 +231,22 @@ class _LoginRegisterState extends State<loginandreg>{
     else{
       return
         [
-          new RaisedButton(
-            child: new Text("Register",style: new TextStyle(fontSize: 20.0)),
-            textColor: Colors.white,
-            color: Colors.green,
-            onPressed: validateAndSubmit,
+          new Material(
+            elevation: 5.0,
+            borderRadius: BorderRadius.circular(12.0),
+            color: Color.fromRGBO(240, 151, 38, 1),
+
+            child: MaterialButton(
+              minWidth:250,
+              padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+              onPressed: validateAndSubmit,
+              child: Text("Register",
+                  textAlign: TextAlign.center,
+                  style: style.copyWith(
+                      color: Colors.white, fontWeight: FontWeight.bold)),
+            ),
           ),
+
 
           new FlatButton(
             child: new Text("Have an Account? Login here!",style: new TextStyle(fontSize: 14.0)),
@@ -197,3 +258,5 @@ class _LoginRegisterState extends State<loginandreg>{
     }
   }
 }
+
+

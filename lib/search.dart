@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
+import 'DetailPage.dart';
+
 
 
 class SearchPage extends StatefulWidget {
@@ -10,59 +12,30 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPage extends State<SearchPage> {
-  var queryResultSet = [];
-  var tempSearchStore = [];
+
+  List<DocumentSnapshot>_posts=[];
+  bool _loadingPosts=true;
 
 
 
-  searchByName(String searchField) {
-    print("called once again");
+  searchByName(String searchField) async{
+    print(searchField);
+    Query q= Firestore.instance.collection('posts').where('description', isEqualTo: searchField.substring(0, 1).toUpperCase() + searchField.substring(1));
+    setState(() {
+      _loadingPosts=true;
+    });
+    QuerySnapshot querySnapshot=await q.getDocuments();
+    _posts=querySnapshot.documents;
 
-    return Firestore.instance
-        .collection('posts')
-        .where('searchKey',
-        isEqualTo: searchField)
-        .getDocuments();
-
+    setState(() {
+      _loadingPosts=false;
+    });
+    print(_posts);
+    return _posts;
   }
 
-  initiateSearch(value) {
-    if (value.length == 0) {
-      setState(() {
-        queryResultSet = [];
-        tempSearchStore = [];
-        print("emptied");
-      });
-
-    }
-
-    var capitalizedValue =
-        value.toUpperCase();
-        print(capitalizedValue);
-
-
-
-
-    if (queryResultSet.length == 0 && value.length == 1) {
-
-      print(queryResultSet.length);
-      searchByName(value).then((QuerySnapshot docs) {
-        for (int i = 0; i < docs.documents.length; ++i) {
-          queryResultSet.add(docs.documents[i].data);
-          print("hello");
-        }
-      });
-    } else {
-      tempSearchStore = [];
-      queryResultSet.forEach((element) {
-        if (element['description'].toUpperCase().startsWith(capitalizedValue)) {
-          setState(() {
-            tempSearchStore.add(element);
-          });
-        }
-      });
-    }
-
+  navigateToDetail(DocumentSnapshot post){
+    Navigator.push(context, MaterialPageRoute(builder: (context)=>DetailPage(post: post,)));
   }
 
   @override
@@ -76,7 +49,7 @@ class _SearchPage extends State<SearchPage> {
 
               autofocus: true,
               onChanged: (val) {
-                initiateSearch(val);
+                searchByName(val);
               },
               decoration: InputDecoration(
                   prefixIcon: IconButton(
@@ -94,34 +67,42 @@ class _SearchPage extends State<SearchPage> {
             ),
           ),
           SizedBox(height: 10.0),
-          GridView.count(
-              padding: EdgeInsets.only(left: 10.0, right: 10.0),
-              crossAxisCount: 2,
-              crossAxisSpacing: 4.0,
-              mainAxisSpacing: 4.0,
-              primary: false,
-              shrinkWrap: true,
-              children: tempSearchStore.map((element) {
-                return buildResultCard(element);
-              }).toList())
+          _loadingPosts==true?Container(
+            child: Center(
+              child: Image.asset("assets/loading1.gif",height: 150,width: 150,),
+            ),
+          ):Container(
+            child: _posts.length==0?Center(
+              child: Text("No Data to show with name:"),
+            ):ListView.builder(
+                scrollDirection: Axis.vertical,
+                shrinkWrap: true,
+                itemCount: _posts.length,
+                itemBuilder: (BuildContext ctx,int index){
+                  return Card(child:ListTile(
+
+                    leading: CircleAvatar(
+                      backgroundImage: NetworkImage(_posts[index].data['image']),radius: 30,
+                    ),
+
+                    title: Text(_posts[index].data['description'],style: TextStyle(fontSize: 22,color: Colors.amber,),),
+                    subtitle: Text(_posts[index].data['date']+"\n"+_posts[index].data['time'],style: TextStyle(fontSize: 15),),
+                    isThreeLine: true,
+                    trailing: Icon(Icons.keyboard_arrow_right),
+                    contentPadding: EdgeInsets.symmetric(horizontal: 20.0,vertical: 5.0),
+                    onTap: (){
+                      navigateToDetail(_posts[index]);
+                    },
+
+                    onLongPress: (){
+                      // do something else
+                    },
+                  )
+                  );
+                }),
+
+
+          ),
         ]));
   }
-}
-
-Widget buildResultCard(data) {
-  return Card(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-      elevation: 2.0,
-      child: Container(
-          child: Center(
-              child: Text(data['description'],
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 20.0,
-                ),
-              )
-          )
-      )
-  );
 }

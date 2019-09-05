@@ -176,10 +176,8 @@ class _NewPostPageState extends State<NewPostPage>{
         centerTitle: true,
       ),
       resizeToAvoidBottomInset: false,
-        body: SafeArea(
-          top: false,
-          bottom: false,
-          child: Container(
+        body: new SingleChildScrollView(
+          reverse: false,
             child: Form(
               key: formKey,
               child: Container(
@@ -240,13 +238,7 @@ class _NewPostPageState extends State<NewPostPage>{
 
                         child: Column(
                           children: <Widget>[
-                            FormBuilderDateTimePicker(
-                              attribute: "date",
-                              inputType: InputType.date,
-                              format: DateFormat("yyyy-MM-dd"),
-                              decoration:
-                              InputDecoration(labelText: "Appointment Time"),
-                            ),
+
                             const SizedBox(height: 10,),
                             TextFormField(
                                 decoration: new InputDecoration(border: OutlineInputBorder(),labelText: 'Full Name',
@@ -258,32 +250,9 @@ class _NewPostPageState extends State<NewPostPage>{
                                   return value.isEmpty ? 'Full Name is required' : null;
                                 },
                                 onSaved: (value){
-                                  return _myname=value;
+                                  return _myname=value.substring(0, 1).toUpperCase() + value.substring(1);
                                 }) ,
-                            const SizedBox(height: 10,),
 
-                            FormBuilderSegmentedControl(
-                              decoration:
-                              InputDecoration(labelText: "Movie Rating (Archer)"),
-                              attribute: "movie_rating",
-                              options: List.generate(5, (i) => i + 1)
-                                  .map(
-                                      (value) => FormBuilderFieldOption(value: value))
-                                  .toList(),
-                            ),
-                            const SizedBox(height: 10,),
-                            TextFormField(
-                                decoration: new InputDecoration(border: OutlineInputBorder(),labelText: 'Full Name',
-                                    prefixIcon: Icon(Icons.perm_identity)
-                                ),
-                                style: new TextStyle(fontSize: 14, color: Colors.amber,),
-
-                                validator: (value){
-                                  return value.isEmpty ? 'Full Name is required' : null;
-                                },
-                                onSaved: (value){
-                                  return _myname=value;
-                                }) ,
                             const SizedBox(height: 10,),
 
                             TextFormField(
@@ -384,7 +353,7 @@ class _NewPostPageState extends State<NewPostPage>{
               ),
             ),
           ),
-        ),
+
 //      body: Form(
 //        key: _formKey,
 //        child: Padding(

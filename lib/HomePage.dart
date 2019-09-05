@@ -56,6 +56,9 @@ class _HomePageState extends State<HomePage>{
       _loadingPosts=false;
     });
   }
+
+
+
   _getMorePosts() async{
     print("_getMoreProducts called");
 
@@ -86,6 +89,8 @@ class _HomePageState extends State<HomePage>{
     });
   }
 
+
+
   void _logoutUser() async{
     try{
       await widget.auth.signOut();
@@ -109,6 +114,9 @@ class _HomePageState extends State<HomePage>{
       }
     });
   }
+
+
+
   navigateToDetail(DocumentSnapshot post){
     Navigator.push(context, MaterialPageRoute(builder: (context)=>DetailPage(post: post,)));
   }
@@ -184,7 +192,7 @@ class _HomePageState extends State<HomePage>{
 //                          borderRadius: BorderRadius.all(Radius.circular(50.0)),
                           elevation: 10.0,
                           child: Padding(padding: EdgeInsets.all(8.0),
-                            child: Image.asset('assets/logo.png',width: 100,height: 100,),),
+                            child: Image.asset('assets/logog.png',width: 100,height: 100,),),
                         ),
                         Padding(
                           padding: const EdgeInsets.all(8.0),
@@ -213,7 +221,7 @@ class _HomePageState extends State<HomePage>{
       ),
       body: _loadingPosts==true?Container(
         child: Center(
-          child: Image.asset("assets/loading1.gif",height: 100,width: 100,),
+          child: Image.asset("assets/loading1.gif",height: 150,width: 150,),
         ),
       ):Container(
         child: _posts.length==0?Center(
